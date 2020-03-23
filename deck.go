@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 // TODO: Create a new type of deck
@@ -25,8 +27,8 @@ func newDeck() deck {
 	return cards
 }
 
-func (cards deck) print() {
-	for _, card := range cards {
+func (d deck) print() {
+	for _, card := range d {
 		fmt.Println(card)
 	}
 }
@@ -36,15 +38,15 @@ func deal(d deck, handSize int) (deck, deck) {
 }
 
 //TODO: make a helper function to change a deck to a string
-func (cards deck) deckToString() string {
-	sliceOfStrings := []string(cards)
+func (d deck) deckToString() string {
+	sliceOfStrings := []string(d)
 	return strings.Join(sliceOfStrings, ",")
 }
 
 //TODO: make a dave to file function
 
-func (cards deck) saveToFile(filename string) error {
-	return ioutil.WriteFile(filename, []byte(cards.deckToString()), 0666)
+func (d deck) saveToFile(filename string) error {
+	return ioutil.WriteFile(filename, []byte(d.deckToString()), 0666)
 }
 
 //TODO: make a function to read form file
@@ -60,4 +62,15 @@ func newDeckFromFile(filename string) deck {
 	}
 	d := strings.Split(string(byteSlice), ",")
 	return deck(d)
+}
+
+// TODO: create a function to shuffle the deck
+
+func (d deck) shuffleDeck() {
+	src := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(src)
+	for index := range d {
+		newPosition := r.Intn(len(d) - 1)
+		d[index], d[newPosition] = d[newPosition], d[index]
+	}
 }
